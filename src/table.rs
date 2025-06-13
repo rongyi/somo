@@ -73,7 +73,7 @@ fn fill_terminal_width(terminal_width: u16, max_column_spaces: [u16; 7]) -> Stri
     let total_column_spaces: u16 = max_column_spaces.iter().sum();
 
     let calculate_column_width = |column_space: u16| {
-        ((column_space as f64 / total_column_spaces as f64) * (terminal_width as f64))
+        (column_space as f64 / total_column_spaces as f64) * (terminal_width as f64)
     };
     let empty_character = "\u{2800}";
 

@@ -52,10 +52,10 @@ fn create_table_style() -> MadSkin {
 fn format_known_address(remote_address: &String, address_type: &AddressType) -> String {
     match address_type {
         AddressType::Unspecified => {
-            format!("*{}*", remote_address)
+            format!("{}", remote_address)
         }
         AddressType::Localhost => {
-            format!("*{} localhost*", remote_address)
+            format!("{} localhost", remote_address)
         }
         AddressType::Extern => remote_address.to_string(),
     }
@@ -73,7 +73,7 @@ fn fill_terminal_width(terminal_width: u16, max_column_spaces: [u16; 7]) -> Stri
     let total_column_spaces: u16 = max_column_spaces.iter().sum();
 
     let calculate_column_width = |column_space: u16| {
-        ((column_space as f64 / total_column_spaces as f64) * (terminal_width as f64))
+        (column_space as f64 / total_column_spaces as f64) * (terminal_width as f64)
     };
     let empty_character = "\u{2800}";
 
@@ -113,7 +113,7 @@ pub fn print_connections_table(all_connections: &Vec<Connection>) {
             format_known_address(&connection.remote_address, &connection.address_type);
 
         markdown.push_str(&format!(
-            "| *{}* | {} | {} | {} | {} | {} *{}* | {} |\n",
+            "| {} | {} | {} | {} | {} | {} {} | {} |\n",
             idx + 1,
             connection.proto,
             connection.local_port,

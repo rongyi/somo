@@ -51,7 +51,7 @@ struct Args {
     #[arg(short = 'o', long, default_value_t = false)]
     open: bool,
 
-    #[arg(short = 'l', long, default_value_t = false)]
+    #[arg(short = 'l', long, default_value_t = true)]
     listen: bool,
 
     #[arg(long, default_value_t = false)]

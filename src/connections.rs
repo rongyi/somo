@@ -1,6 +1,8 @@
 use procfs::process::FDTarget;
 use procfs::process::Stat;
 use std::collections::HashMap;
+use std::fs;
+use std::path::PathBuf;
 
 use crate::schemas::AddressType;
 use crate::schemas::Connection;
@@ -63,7 +65,10 @@ fn filter_out_connection(connection_details: &Connection, filter_options: &Filte
         _ => {}
     }
     match &filter_options.by_program {
-        Some(filter_program) if &connection_details.program != filter_program => return true,
+        // who want totally match?
+        Some(filter_program) if !connection_details.program.contains(filter_program) => {
+            return true
+        }
         _ => {}
     }
     match &filter_options.by_pid {
@@ -100,6 +105,22 @@ fn get_address_type(remote_address: &str) -> AddressType {
     AddressType::Extern
 }
 
+fn get_cmdline(pid: i32) -> String {
+    let mut path = PathBuf::from("/proc");
+    path.push(pid.to_string());
+    path.push("cmdline");
+
+    let contents = fs::read(path).unwrap();
+    // /proc/<pid>/cmdline is null ('\0') separated
+    let parts: Vec<String> = contents
+        .split(|&b| b == 0)
+        .filter(|s| !s.is_empty())
+        .map(|s| String::from_utf8_lossy(s).into_owned())
+        .collect();
+
+    parts.join(" ")
+}
+
 fn get_connection_data(net_entry: NetEntry, all_processes: &HashMap<u64, Stat>) -> Connection {
     // process the remote-address and remote-port by spliting them at ":"
     let (_, local_port) = utils::get_address_parts(&format!("{}", net_entry.local_address));
@@ -110,7 +131,7 @@ fn get_connection_data(net_entry: NetEntry, all_processes: &HashMap<u64, Stat>) 
     // check if there is no program/pid information
     let (program, pid) = all_processes
         .get(&net_entry.inode)
-        .map(|stat| (stat.comm.to_string(), stat.pid.to_string()))
+        .map(|stat| (get_cmdline(stat.pid), stat.pid.to_string()))
         .unwrap_or(("-".to_string(), "-".to_string()));
 
     let address_type: AddressType = get_address_type(&remote_address);

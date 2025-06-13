@@ -72,28 +72,6 @@ pub fn pretty_print_info(text: &str) {
     print!("{}", skin.term_text(&markdown));
 }
 
-/// Prints out Markdown formatted text using a custom appearence / termimad "skin".
-///
-/// # Appearence
-/// * **bold** text -> bold and white
-/// * *italic* text -> not italic and gray
-/// * ~~strikeout~~ text -> not striked out and red
-///
-/// # Arguments
-/// * `text`: The text to print to the console.
-///
-/// # Returns
-/// None
-pub fn pretty_print_error(text: &str) {
-    let mut skin = MadSkin::default();
-    skin.bold.set_fg(White);
-    skin.italic = CompoundStyle::new(Some(gray(11)), None, Encircled.into());
-    skin.strikeout = CompoundStyle::new(Some(Red), None, Encircled.into());
-
-    let markdown: String = format!("~~Error~~: *{}*", text);
-    print!("{}", skin.term_text(&markdown));
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
